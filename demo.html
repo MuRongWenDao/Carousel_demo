@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin:0;padding:0;}
+        li{list-style: none;}
+        #div1 {min-width:1000px; height:396px; overflow: hidden; position: relative; }
+        #div1 ul{position: absolute; left:0;}
+        #div1 ul li{float:left; }
+        #div1 ul li img{position: relative; left:0; width:1920px;}
+        #btn {width:100%; text-align: center; position: absolute; bottom:0;}
+        #btn a {width:10px; height:10px; background:#666666; display: inline-block;}
+        #btn a.active {background: white;}
+        #btn a:hover {background: white;}
+    </style>
+    <script type="text/javascript" src="move.js"></script>
+    <script>
+        window.onload =function() {
+            var oDiv = document.getElementById('div1');
+            var oUl = oDiv.getElementsByTagName('ul')[0];
+            var aLi = oUl.getElementsByTagName('li');
+            var aImg = oUl.getElementsByTagName('img');
+
+            var oBtn = document.getElementById('btn');
+            var aA = oBtn.getElementsByTagName('a');
+            var ImgWidth = 1920;
+            var iNow = 0;
+            var iNow2 = 0;
+            var timer = null;
+            oUl.style.width = aImg.length * ImgWidth + 'px';
+            function toReSize() {
+                var viewWidth = document.documentElement.clientWidth;
+                if (viewWidth > 1000) {
+                    for (var i = 0; i < aImg.length; i++) {
+                        aImg[i].style.left = -(ImgWidth - viewWidth) / 2 + 'px';
+                    }
+                }
+            }
+
+            toReSize();
+
+            window.onresize = function () {
+                toReSize();
+            };
+
+            for (var i = 0; i < aA.length; i++) {
+                aA[i].index = i;
+                aA[i].onclick = function () {
+                    iNow = this.index;
+                    for (var i = 0; i < aA.length; i++) {
+                        aA[i].className = '';
+                    }
+                    this.className = 'active';
+                    //oUl.style.left = -(this.index)*ImgWidth + 'px';
+                    startMove(oUl, {left: -(this.index) * ImgWidth})
+
+                }
+            }
+            autoPlay();
+            function autoPlay() {
+                clearInterval(timer);
+                timer = setInterval(toRun, 3000)
+            }
+
+            function toRun() {
+
+                if (iNow == aA.length - 1) {
+                    aLi[0].style.position = 'relative';  //为实现无缝轮播，将aLi[0]排在Li[2]之后
+                    aLi[0].style.left = aLi.length * ImgWidth + 'px';
+
+                    iNow = 0;
+                } else {
+                    iNow++;
+                }
+                iNow2++;
+                for (var i = 0; i < aA.length; i++) {
+                    aA[i].className = '';
+                }
+                aA[iNow].className = 'active';
+                startMove(oUl, {left: -iNow2 * ImgWidth}, function () {
+                    if (iNow == 0) {
+                        aLi[0].style.position = 'static';
+                        oUl.style.left = 0;
+                        iNow2 = 0;
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="div1">
+    <ul>
+        <li> <img src="img/1.jpg" /></li>
+        <li> <img src="img/2.jpg" /></li>
+        <li> <img src="img/3.jpg" /></li>
+    </ul>
+    <div id="btn">
+        <a href="javascript:" class="active"></a>
+        <a href="javascript:" ></a>
+        <a href="javascript:" ></a>
+    </div>
+</div>
+</body>
+</html>
